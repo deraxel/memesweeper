@@ -59,6 +59,8 @@ void Game::UpdateModel(){
 			}
 		}
 		gameOverWin=field.checkWin();
+	} else{
+		field.revealAll();
 	}
 }
 

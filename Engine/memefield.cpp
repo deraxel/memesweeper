@@ -32,7 +32,7 @@ void MemeField::Draw(Graphics & gfx) const{
 	}
 }
 
-bool MemeField::checkWin() const{
+bool MemeField::checkWin(){
 	bool checkAll=true;
 	for(int iY=0; iY<height; iY++){
 		for(int iX=0;iX<width;iX++){
@@ -43,6 +43,16 @@ bool MemeField::checkWin() const{
 		}
 	}
 	return checkAll;
+}
+
+void MemeField::revealAll(){
+	for(int iX=0; iX<width; iX++){
+		for(int iY=0; iY<height; iY++){
+			if(field[iX][iY].HasMeme()){
+				field[iX][iY].reveal();
+			}
+		}
+	}
 }
 
 void MemeField::Tile::Draw(const Vei2& screenPos,Graphics& gfx)const{
@@ -59,6 +69,9 @@ void MemeField::Tile::Draw(const Vei2& screenPos,Graphics& gfx)const{
 				drawMemeCount(memeNum,screenPos,gfx);
 			} else{
 				SpriteCodex::DrawTileBomb(screenPos,gfx);
+				if(deathLocation){
+					SpriteCodex::DrawTileCross(screenPos,gfx);
+				}
 			} 
 			break;
 	}
@@ -136,6 +149,7 @@ bool MemeField::isMeme(const Vei2& mousePos){
 		Vei2 gridPos((mousePos.x-xStart)/SpriteCodex::tileSize,(mousePos.y-yStart)/SpriteCodex::tileSize);
 		if(TileAt(gridPos).getState()==Tile::State::Hidden)
 		internalSpread(gridPos);
+		TileAt(gridPos).deathLocation=TileAt(gridPos).HasMeme();
 		return TileAt(gridPos).HasMeme();
 	}
 	return false;

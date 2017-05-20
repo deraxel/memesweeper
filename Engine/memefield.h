@@ -14,6 +14,7 @@ private:
 		void plantFlag();
 		void captureFlag();
 		int memeNum=0;
+		bool deathLocation=false;
 		void drawMemeCount(int const memes,const Vei2 & screenPos,Graphics& gfx) const;
 		enum class State{
 			Hidden,
@@ -32,10 +33,13 @@ private:
 	const Tile& TileAt(const Vei2& gridPos) const;
 	void internalSpread(const Vei2& gridPos);
 public:
+	void revealAll();
 	void plantFlag(const Vei2& mousePos);
 	bool isMeme(const Vei2& mousePos);
 	int neighborBombs(const Vei2 & gridPos) const;
 	MemeField(int nMemes);
 	void Draw(Graphics& gfx) const;
-	bool checkWin() const;
+	bool checkWin();
+	bool gameOverWin=false;
+
 };
