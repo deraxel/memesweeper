@@ -2,10 +2,9 @@
 #include <cmath>
 
 Vei2::Vei2( int x_in,int y_in )
-	:
-	x( x_in ),
-	y( y_in )
 {
+	x=x_in;
+	y=y_in;
 }
 
 Vei2 Vei2::operator+( const Vei2& rhs ) const
