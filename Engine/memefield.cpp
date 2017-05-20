@@ -23,17 +23,19 @@ MemeField::MemeField(int nMemes){
 }
 
 void MemeField::Draw(Graphics & gfx) const{
+	gfx.DrawRect(xStart,yStart,xStart+SpriteCodex::tileSize*width,
+			   yStart+SpriteCodex::tileSize*height,SpriteCodex::baseColor);
 	for(Vei2 gridPos={0,0}; gridPos.y<height; gridPos.y++){
 		for(gridPos.x=0; gridPos.x<width; gridPos.x++){
-			TileAt(gridPos).Draw(gridPos*SpriteCodex::tileSize,gfx);
+			TileAt(gridPos).Draw(Vei2(xStart+gridPos.x*SpriteCodex::tileSize,yStart+gridPos.y*SpriteCodex::tileSize),gfx);
 		}
 	}
 }
 
-void MemeField::Tile::Draw(const Vei2 & screenPos,Graphics & gfx)const{
+void MemeField::Tile::Draw(const Vei2& screenPos,Graphics& gfx)const{
 	switch(state){
 		case State::Hidden:
-			SpriteCodex::DrawTileButton(screenPos,gfx);
+			SpriteCodex::DrawTileButton(screenPos,gfx); 
 			break;
 		case State::Flagged:
 			SpriteCodex::DrawTileButton(screenPos,gfx);
@@ -41,7 +43,7 @@ void MemeField::Tile::Draw(const Vei2 & screenPos,Graphics & gfx)const{
 			break;
 		case State::Revealed:
 			if(!hasMeme){
-				SpriteCodex::DrawTile0(screenPos,gfx);
+				drawMemeCount(memeNum,screenPos,gfx);
 			} else{
 				SpriteCodex::DrawTileBomb(screenPos,gfx);
 			} 
@@ -58,6 +60,90 @@ bool MemeField::Tile::HasMeme()const{
 	return hasMeme;
 }
 
+void MemeField::Tile::reveal(){
+	state=State::Revealed;
+}
+
+void MemeField::Tile::drawMemeCount(int const memes,const Vei2& screenPos,Graphics& gfx)const{
+	switch(memes){
+		case 0:
+			SpriteCodex::DrawTile0(screenPos,gfx);
+			break;
+		case 1:
+			SpriteCodex::DrawTile1(screenPos,gfx);
+			break;
+		case 2:
+			SpriteCodex::DrawTile2(screenPos,gfx);
+			break;
+		case 3:
+			SpriteCodex::DrawTile3(screenPos,gfx);
+			break;
+		case 4:
+			SpriteCodex::DrawTile4(screenPos,gfx);
+			break;
+		case 5:
+			SpriteCodex::DrawTile5(screenPos,gfx);
+			break;
+		case 6:
+			SpriteCodex::DrawTile6(screenPos,gfx);
+			break;
+		case 7:
+			SpriteCodex::DrawTile7(screenPos,gfx);
+			break;
+		case 8:
+			SpriteCodex::DrawTile8(screenPos,gfx);
+			break;
+	}
+}
+
+MemeField::Tile::State MemeField::Tile::getState() const{
+	return state;
+}
+
+bool MemeField::isMeme(const Vei2& mousePos){
+	if(mousePos.x>=xStart && mousePos.y>=yStart && mousePos.x<(xStart+(width*SpriteCodex::tileSize))&&mousePos.y<(yStart+(height*SpriteCodex::tileSize))){
+		Vei2 gridPos((mousePos.x-xStart)/SpriteCodex::tileSize,(mousePos.y-yStart)/SpriteCodex::tileSize);
+		internalSpread(gridPos);
+		return TileAt(gridPos).HasMeme();
+	}
+	return false;
+}
+
+int MemeField::neighborBombs(const Vei2& gridPos)const{
+	int number=0;
+	if(field[gridPos.x-1][gridPos.y-1].HasMeme()&&
+	   gridPos.x-1>=0&&gridPos.y-1>=0){
+		number++;
+	}
+	if(field[gridPos.x][gridPos.y-1].HasMeme()&&gridPos.y-1>=0){
+		number++;
+	}
+	if(field[gridPos.x+1][gridPos.y-1].HasMeme()&&
+	   gridPos.y-1>=0&&gridPos.x+1<width){
+		number++;
+	}
+	if(field[gridPos.x-1][gridPos.y].HasMeme()&&
+	   gridPos.x-1>=0){
+		number++;
+	}
+	if(field[gridPos.x+1][gridPos.y].HasMeme()&&
+	   gridPos.x+1<width){
+		number++;
+	}
+	if(field[gridPos.x-1][gridPos.y+1].HasMeme()&&
+	   gridPos.x-1>=0&&gridPos.y+1<height){
+		number++;
+	}
+	if(field[gridPos.x][gridPos.y+1].HasMeme()&&
+	   gridPos.y+1<height){
+		number++;
+	}
+	if(field[gridPos.x+1][gridPos.y+1].HasMeme()&&
+	   gridPos.y+1<height&&gridPos.x+1<width){
+		number++;
+	}	
+	return number;
+}
 
 MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos){
 	return field[gridPos.x][gridPos.y];
@@ -65,4 +151,41 @@ MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos){
 
 const MemeField::Tile& MemeField::TileAt(const Vei2 & gridPos)const{
 	return field[gridPos.x][gridPos.y];
+}
+
+void MemeField::internalSpread(const Vei2 & gridPos){
+	TileAt(gridPos).memeNum=neighborBombs(gridPos);
+	TileAt(gridPos).reveal();
+	Vei2 selGridStart(0,0);
+	Vei2 selGridEnd(0,0);
+
+	if(neighborBombs(gridPos)==0){
+		if(gridPos.x-1<0){
+			selGridStart.x=0;
+		} else{
+			selGridStart.x=gridPos.x-1;
+		}
+		if(gridPos.y-1<0){
+			selGridStart.y=0;
+		} else{
+			selGridStart.y=gridPos.y-1;
+		}
+		if(gridPos.x+2>width){
+			selGridEnd.x=width-1;
+		} else{
+			selGridEnd.x=gridPos.x+1;
+		}
+		if(gridPos.y+2>height){
+			selGridEnd.y=height-1;
+		} else{
+			selGridEnd.y=gridPos.y+1;
+		}
+		for(int iX=selGridStart.x; iX<=selGridEnd.x; iX++){
+			for(int iY=selGridStart.y; iY<=selGridEnd.y; iY++){
+				if(field[iX][iY].getState()==Tile::State::Hidden){
+					internalSpread(Vei2(iX,iY));
+				}
+			}
+		}
+	}
 }

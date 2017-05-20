@@ -39,7 +39,9 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-
+	if(wnd.mouse.LeftIsPressed()){
+		field.isMeme(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+	}
 }
 
 void Game::ComposeFrame()
