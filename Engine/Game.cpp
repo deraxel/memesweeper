@@ -39,8 +39,16 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if(wnd.mouse.LeftIsPressed()){
+	if(!wnd.mouse.LeftIsPressed()&&!wnd.mouse.RightIsPressed()){
+		oneClick=true;
+	}
+	if(wnd.mouse.LeftIsPressed() && oneClick){
 		field.isMeme(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+		oneClick=false;
+	}
+	if(wnd.mouse.RightIsPressed()&&oneClick){
+		field.plantFlag(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+		oneClick=false;
 	}
 }
 

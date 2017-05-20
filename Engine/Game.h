@@ -43,6 +43,7 @@ private:
 	Graphics gfx;
 	MemeField field;
 	static constexpr int memes=10;
+	bool oneClick=true;
 	/********************************/
 	/*  User Variables              */
 	/********************************/

@@ -100,9 +100,28 @@ MemeField::Tile::State MemeField::Tile::getState() const{
 	return state;
 }
 
+void MemeField::plantFlag(const Vei2 & mousePos){
+	Vei2 gridPos((mousePos.x-xStart)/SpriteCodex::tileSize,(mousePos.y-yStart)/SpriteCodex::tileSize);
+	if(TileAt(gridPos).getState()==Tile::State::Hidden){
+		TileAt(gridPos).plantFlag();
+	} else if(TileAt(gridPos).getState()==Tile::State::Flagged){
+		TileAt(gridPos).captureFlag();
+	}
+
+}
+
+void MemeField::Tile::plantFlag(){
+	state=State::Flagged;
+}
+
+void MemeField::Tile::captureFlag(){
+	state=State::Hidden;
+}
+
 bool MemeField::isMeme(const Vei2& mousePos){
 	if(mousePos.x>=xStart && mousePos.y>=yStart && mousePos.x<(xStart+(width*SpriteCodex::tileSize))&&mousePos.y<(yStart+(height*SpriteCodex::tileSize))){
 		Vei2 gridPos((mousePos.x-xStart)/SpriteCodex::tileSize,(mousePos.y-yStart)/SpriteCodex::tileSize);
+		if(TileAt(gridPos).getState()==Tile::State::Hidden)
 		internalSpread(gridPos);
 		return TileAt(gridPos).HasMeme();
 	}

@@ -11,6 +11,8 @@ private:
 		void spawnMeme();
 		bool HasMeme() const;
 		void reveal();
+		void plantFlag();
+		void captureFlag();
 		int memeNum=0;
 		void drawMemeCount(int const memes,const Vei2 & screenPos,Graphics& gfx) const;
 		enum class State{
@@ -30,6 +32,7 @@ private:
 	const Tile& TileAt(const Vei2& gridPos) const;
 	void internalSpread(const Vei2& gridPos);
 public:
+	void plantFlag(const Vei2& mousePos);
 	bool isMeme(const Vei2& mousePos);
 	int neighborBombs(const Vei2 & gridPos) const;
 	MemeField(int nMemes);
