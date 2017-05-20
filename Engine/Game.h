@@ -44,6 +44,8 @@ private:
 	MemeField field;
 	static constexpr int memes=10;
 	bool oneClick=true;
+	bool gameOverLoss=false;
+	bool gameOverWin=false;
 	/********************************/
 	/*  User Variables              */
 	/********************************/

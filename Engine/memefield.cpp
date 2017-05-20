@@ -32,6 +32,19 @@ void MemeField::Draw(Graphics & gfx) const{
 	}
 }
 
+bool MemeField::checkWin() const{
+	bool checkAll=true;
+	for(int iY=0; iY<height; iY++){
+		for(int iX=0;iX<width;iX++){
+			if(field[iX][iY].getState()==Tile::State::Hidden||
+			   field[iX][iY].getState()==Tile::State::Flagged){
+				checkAll=field[iX][iY].HasMeme()&&checkAll;
+			}
+		}
+	}
+	return checkAll;
+}
+
 void MemeField::Tile::Draw(const Vei2& screenPos,Graphics& gfx)const{
 	switch(state){
 		case State::Hidden:

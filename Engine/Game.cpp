@@ -1,5 +1,5 @@
-/****************************************************************************************** 
- *	Chili DirectX Framework Version 16.07.20											  *	
+/******************************************************************************************
+ *	Chili DirectX Framework Version 16.07.20											  *
  *	Game.cpp																			  *
  *	Copyright 2016 PlanetChili.net <http://www.planetchili.net>							  *
  *																						  *
@@ -20,39 +20,52 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd ),
-	field(memes)
-{
+	wnd(wnd),
+	gfx(wnd),
+	field(memes){
 }
 
-void Game::Go()
-{
-	gfx.BeginFrame();	
+void Game::Go(){
+	gfx.BeginFrame();
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
 }
 
-void Game::UpdateModel()
-{
-	if(!wnd.mouse.LeftIsPressed()&&!wnd.mouse.RightIsPressed()){
-		oneClick=true;
-	}
-	if(wnd.mouse.LeftIsPressed() && oneClick){
-		field.isMeme(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
-		oneClick=false;
-	}
-	if(wnd.mouse.RightIsPressed()&&oneClick){
-		field.plantFlag(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
-		oneClick=false;
+void Game::UpdateModel(){
+	if(!gameOverLoss && !gameOverWin){
+		/*if(!wnd.mouse.LeftIsPressed()&&!wnd.mouse.RightIsPressed()){
+			oneClick=true;
+		}
+		if(wnd.mouse.LeftIsPressed()&&oneClick){
+			gameOver=field.isMeme(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+			oneClick=false;
+		}
+		if(wnd.mouse.RightIsPressed()&&oneClick){
+			field.plantFlag(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+			oneClick=false;
+		}
+	}*/
+		while(!wnd.mouse.IsEmpty()){
+			const auto e=wnd.mouse.Read();
+			if(e.GetType()==Mouse::Event::Type::LPress){
+				gameOverLoss=field.isMeme(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+			}else if(e.GetType()==Mouse::Event::Type::RPress){
+				field.plantFlag(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()));
+			}
+		}
+		gameOverWin=field.checkWin();
 	}
 }
 
 void Game::ComposeFrame()
 {
 	field.Draw(gfx);
+	if(gameOverWin){
+		SpriteCodex::DrawTileCross(Vei2(0,0),gfx);
+	}
 }

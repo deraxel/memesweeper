@@ -37,4 +37,5 @@ public:
 	int neighborBombs(const Vei2 & gridPos) const;
 	MemeField(int nMemes);
 	void Draw(Graphics& gfx) const;
+	bool checkWin() const;
 };
