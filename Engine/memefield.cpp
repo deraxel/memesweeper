@@ -12,7 +12,8 @@ MemeField::MemeField(int nMemes){
 	std::mt19937 rng(rd());
 	std::uniform_int_distribution<int>xDist(0,width-1);
 	std::uniform_int_distribution<int>yDist(0,height-1);
-
+	xStart=(Graphics::ScreenWidth/2)-((SpriteCodex::tileSize*width)/2);
+	yStart=(Graphics::ScreenHeight/2)-((SpriteCodex::tileSize*height)/2);
 	for(int nSpaw=0; nSpaw<nMemes; nSpaw++){
 		Vei2 spawnPos;
 		do{
@@ -51,6 +52,9 @@ void MemeField::revealAll(){
 			if(field[iX][iY].HasMeme()){
 				field[iX][iY].reveal();
 			}
+			if(!field[iX][iY].HasMeme()&&field[iX][iY].getState()==Tile::State::Flagged){
+				field[iX][iY].falseFlag=true;
+			}
 		}
 	}
 }
@@ -63,6 +67,9 @@ void MemeField::Tile::Draw(const Vei2& screenPos,Graphics& gfx)const{
 		case State::Flagged:
 			SpriteCodex::DrawTileButton(screenPos,gfx);
 			SpriteCodex::DrawTileFlag(screenPos,gfx);
+			if(falseFlag){
+				SpriteCodex::DrawTileCross(screenPos,gfx);
+			}
 			break;
 		case State::Revealed:
 			if(!hasMeme){

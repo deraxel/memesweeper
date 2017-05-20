@@ -15,6 +15,7 @@ private:
 		void captureFlag();
 		int memeNum=0;
 		bool deathLocation=false;
+		bool falseFlag=false;
 		void drawMemeCount(int const memes,const Vei2 & screenPos,Graphics& gfx) const;
 		enum class State{
 			Hidden,
@@ -24,10 +25,10 @@ private:
 		State getState()const;
 	private: State state=State::Hidden;
 	};
-	static constexpr int xStart=100;
-	static constexpr int yStart=100;
-	static constexpr int width=20;
-	static constexpr int height=16;
+	int xStart;
+	int yStart;
+	static constexpr int width=40;
+	static constexpr int height=32;
 	Tile field[width][height];
 	Tile& TileAt(const Vei2& gridPos);
 	const Tile& TileAt(const Vei2& gridPos) const;
